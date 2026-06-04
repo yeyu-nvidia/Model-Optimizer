@@ -53,6 +53,7 @@ Changelog
 
 - In Megatron-Core only do EP amax sync for routed expert weights if ``sync_expert_weight_amax=True``. Previously EP amax sync would sync routed expert weights across EP ranks even when ``sync_expert_weight_amax`` was False.
 - Fix Megatron-Core HF importer to load fused ``TELayerNormColumnParallelLinear.layer_norm_weight`` from HF for GPT-family models (Qwen3 etc.) under ``--export-default-te-spec``. Importer now prefers per-context keys ``fused_input_layernorm`` / ``fused_pre_mlp_layernorm`` (fallback ``fused_norm`` for Nemotron-H backward compatibility); ``mcore_qwen.py`` provides the new rules. Without this fix, post-prune MMLU sat at chance.
+- Fix ONNX FP16/BF16 conversion (``--high_precision_dtype fp16``) producing inconsistent tensor types on models with control-flow ``If``/``Loop``/``Scan`` subgraphs (e.g. a ``Gemm`` reading an outer-scope activation alongside converted weights, or ``Resize`` ``scales`` that must stay FP32). Subgraph nodes now only run in low precision when all their float inputs are subgraph initializers; outer-scope captures and low-to-high-precision boundaries inside subgraphs are reconciled with ``Cast`` nodes, and ``Constant`` folding refreshes the constant's ``value_info`` so strongly-typed parsers (TensorRT) no longer reject the model.
 
 **Deprecations**
 

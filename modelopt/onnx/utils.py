@@ -1558,6 +1558,14 @@ def remove_redundant_casts(onnx_model: onnx.ModelProto) -> onnx.ModelProto:
                 assert len(cast_producers) == 1 and cast_producers[0].op_type == "Constant"
                 constant_producer = cast_producers[0]
                 _convert_constant_values(constant_producer, node)
+                # Folding changes the Constant output's element type; refresh its value_info so
+                # downstream consumers (and strongly-typed parsers) don't see a stale type that
+                # conflicts with the now-converted constant value.
+                cast_to_type = get_cast_to_type(node)
+                for vi in onnx_model.graph.value_info:
+                    if vi.name == constant_producer.output[0]:
+                        vi.type.tensor_type.elem_type = cast_to_type
+                        break
                 _bypass_cast_node(onnx_model, node)
                 logger.debug(f"Found foldable Constant->Cast pattern, removing {node.name}")
 

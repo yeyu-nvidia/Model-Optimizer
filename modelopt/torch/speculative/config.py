@@ -146,6 +146,23 @@ class DFlashConfig(ModeloptBaseConfig):
         ),
     )
 
+    dflash_lambda_base_start: float = ModeloptField(
+        default=1.0,
+        description=(
+            "Domino only: initial weight of the base (backbone-only) loss in the "
+            "loss = (1 - lambda)*final + lambda*base mixture; linearly decayed to 0. "
+            "Ignored unless dflash_architecture_config.projector_type == 'domino'."
+        ),
+    )
+
+    dflash_lambda_base_decay_ratio: float = ModeloptField(
+        default=1.0,
+        description=(
+            "Domino only: fraction of total training steps over which lambda_base "
+            "decays from dflash_lambda_base_start to 0."
+        ),
+    )
+
 
 class MedusaConfig(ModeloptBaseConfig):
     """Medusa config."""

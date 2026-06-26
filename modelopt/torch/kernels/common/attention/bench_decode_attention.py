@@ -23,11 +23,9 @@ kernel (:func:`attention`), by contrast, tiles that single query into ``BLOCK_M`
 rows (wasting ~127/128 of the work) and does not split the KV reduction — so
 using it for decode is slow at long context.
 
-This benchmark times the split-K kernel against PyTorch's native
-``scaled_dot_product_attention`` (SDPA, the contiguous-cache baseline a model runs
-today) and the prefill kernel, over a KV-length sweep, and reports both speedups
-plus a ``num_kv_splits`` sweep to show its effect on small-batch occupancy.
-A correctness check against a dense fp32 reference runs once before timing.
+This benchmark times both over a KV-length sweep and reports the split-K speedup,
+plus a sweep over ``num_kv_splits`` to show its effect on small-batch occupancy.
+A correctness check against a dense PyTorch reference runs once before timing.
 
 Run ``python -m modelopt.torch.kernels.common.attention.bench_decode_attention``
 (pass ``--help`` for batch / head-count / KV-length options).
@@ -36,7 +34,6 @@ Run ``python -m modelopt.torch.kernels.common.attention.bench_decode_attention``
 import argparse
 
 import torch
-import torch.nn.functional as F
 import triton
 
 from modelopt.torch.kernels.common.attention.decode_attention import attention_decode
@@ -73,23 +70,6 @@ def _dense_ref(q, k, v, scale):
     return torch.einsum("bhs,bhsd->bhd", scores.softmax(dim=-1), vr).to(q.dtype)
 
 
-def _sdpa_decode(q, k, v, scale):
-    """PyTorch native attention (SDPA) for the same decode. q ``[B, Hq, D]``; k/v ``[B, KVH, S, D]``.
-
-    The contiguous-cache baseline a model runs today: SDPA is not paging-aware, so it reads the
-    full contiguous K/V (no block-table gather) and auto-dispatches its backend.
-    """
-    g = q.shape[1] // k.shape[1]
-    out = F.scaled_dot_product_attention(
-        q.unsqueeze(2),  # [B, Hq, 1, D]
-        k.repeat_interleave(g, dim=1),  # [B, Hq, S, D]
-        v.repeat_interleave(g, dim=1),
-        scale=scale,
-        is_causal=False,
-    )
-    return out.squeeze(2)  # [B, Hq, D]
-
-
 def _prefill_as_decode(q, k_cache, v_cache, block_table, seq_lens, scale, page_size, kv_len):
     """Run the single decode query through the prefill kernel (the slow baseline)."""
     batch, num_q_heads, head_dim = q.shape
@@ -115,7 +95,7 @@ def _prefill_as_decode(q, k_cache, v_cache, block_table, seq_lens, scale, page_s
 
 
 def bench(batch, num_q_heads, num_kv_heads, head_dim, kv_len, page_size, dtype, check):
-    """Time SDPA, prefill-as-decode, and split-K decode; return (sdpa_ms, prefill_ms, {split: ms})."""
+    """Time prefill-as-decode and split-K decode for one config; return (prefill_ms, {split: ms})."""
     device = "cuda"
     scale = 1.0 / (head_dim**0.5)
     torch.manual_seed(0)
@@ -145,9 +125,7 @@ def bench(batch, num_q_heads, num_kv_heads, head_dim, kv_len, page_size, dtype, 
         ).float()
         torch.testing.assert_close(decode_out, ref, rtol=2e-2, atol=2e-2)
         torch.testing.assert_close(prefill_out, ref, rtol=2e-2, atol=2e-2)
-        torch.testing.assert_close(_sdpa_decode(q, k, v, scale).float(), ref, rtol=5e-2, atol=5e-2)
 
-    sdpa_ms = triton.testing.do_bench(lambda: _sdpa_decode(q, k, v, scale))
     prefill_ms = triton.testing.do_bench(
         lambda: _prefill_as_decode(
             q, k_cache, v_cache, block_table, seq_lens, scale, page_size, kv_len
@@ -157,7 +135,7 @@ def bench(batch, num_q_heads, num_kv_heads, head_dim, kv_len, page_size, dtype, 
         s: triton.testing.do_bench(lambda s=s: run_decode(s)) for s in _SPLITS
     }
     decode_ms["auto"] = triton.testing.do_bench(lambda: run_decode(None))
-    return sdpa_ms, prefill_ms, decode_ms
+    return prefill_ms, decode_ms
 
 
 def main():
@@ -177,17 +155,14 @@ def main():
     dtype = getattr(torch, args.dtype)
 
     print(
-        f"split-K decode vs PyTorch SDPA & prefill-as-decode | batch={args.batch} "
+        f"split-K decode vs prefill-as-decode | batch={args.batch} "
         f"q_heads={args.num_q_heads} kv_heads={args.num_kv_heads} head_dim={args.head_dim} "
         f"page_size={args.page_size} dtype={args.dtype} ({torch.cuda.get_device_name()})"
     )
     split_cols = "  ".join(f"s={s}" for s in _SPLITS)
-    print(
-        f"{'kv_len':>8} {'sdpa':>8} {'prefill':>8} {'decode':>8}  {split_cols}  "
-        f"{'auto':>7}  {'vs_sdpa':>8} {'vs_pref':>8}"
-    )
+    print(f"{'kv_len':>8} {'prefill':>9} {'decode':>9}  {split_cols}  {'auto':>7}  {'speedup':>8}")
     for kv_len in args.kv_lens:
-        sdpa_ms, prefill_ms, decode_ms = bench(
+        prefill_ms, decode_ms = bench(
             args.batch,
             args.num_q_heads,
             args.num_kv_heads,
@@ -200,8 +175,8 @@ def main():
         best = min(decode_ms.values())
         per_split = "  ".join(f"{decode_ms[s]:5.3f}" for s in _SPLITS)
         print(
-            f"{kv_len:>8} {sdpa_ms:8.3f} {prefill_ms:8.3f} {best:8.3f}  {per_split}  "
-            f"{decode_ms['auto']:7.3f}  {sdpa_ms / best:7.2f}x {prefill_ms / best:7.2f}x"
+            f"{kv_len:>8} {prefill_ms:9.3f} {best:9.3f}  {per_split}  "
+            f"{decode_ms['auto']:7.3f}  {prefill_ms / best:7.2f}x"
         )
 
 

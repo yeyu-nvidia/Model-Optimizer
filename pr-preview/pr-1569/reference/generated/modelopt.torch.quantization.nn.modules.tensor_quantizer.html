@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>tensor_quantizer &mdash; Model Optimizer 0.0.1.dev1+g5e3db75e1</title>
+  <title>tensor_quantizer &mdash; Model Optimizer 0.0.1.dev1+g62a7b9d2c</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -566,6 +566,12 @@ For restoring the quantizer fully including the parameters and buffers, use <cit
 </dd></dl>
 
 <dl class="py property">
+<dt class="sig sig-object py" id="modelopt.torch.quantization.nn.modules.tensor_quantizer.TensorQuantizer.is_fp8">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_fp8</span></span><a class="headerlink" href="#modelopt.torch.quantization.nn.modules.tensor_quantizer.TensorQuantizer.is_fp8" title="Link to this definition"></a></dt>
+<dd><p>Check if is per-tensor FP8 E4M3 (no block scales, no per-channel axis).</p>
+</dd></dl>
+
+<dl class="py property">
 <dt class="sig sig-object py" id="modelopt.torch.quantization.nn.modules.tensor_quantizer.TensorQuantizer.is_mx_format">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_mx_format</span></span><a class="headerlink" href="#modelopt.torch.quantization.nn.modules.tensor_quantizer.TensorQuantizer.is_mx_format" title="Link to this definition"></a></dt>
 <dd><p>Check if is MX formats.</p>
@@ -575,6 +581,20 @@ For restoring the quantizer fully including the parameters and buffers, use <cit
 <dt class="sig sig-object py" id="modelopt.torch.quantization.nn.modules.tensor_quantizer.TensorQuantizer.is_mxfp">
 <span class="sig-name descname"><span class="pre">is_mxfp</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bits</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.quantization.nn.modules.tensor_quantizer.TensorQuantizer.is_mxfp" title="Link to this definition"></a></dt>
 <dd><p>Check if is MXFP4/MXFP6/MXFP8.</p>
+</dd></dl>
+
+<dl class="py property">
+<dt class="sig sig-object py" id="modelopt.torch.quantization.nn.modules.tensor_quantizer.TensorQuantizer.is_nvfp4_dynamic">
+<em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">is_nvfp4_dynamic</span></span><a class="headerlink" href="#modelopt.torch.quantization.nn.modules.tensor_quantizer.TensorQuantizer.is_nvfp4_dynamic" title="Link to this definition"></a></dt>
+<dd><p>E2M1 with E4M3 per-block scales computed dynamically.</p>
+<p>Mirror of <code class="docutils literal notranslate"><span class="pre">is_nvfp4_static</span></code> for the dynamic-scale layout; like it, this does
+not constrain the block size. Consumers that require a specific block size
+(e.g. the block-16 Triton kernels) check <code class="docutils literal notranslate"><span class="pre">block_sizes[-1]</span></code> downstream.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type<span class="colon">:</span></dt>
+<dd class="field-odd"><p>Check if is dynamic NVFP4</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py property">

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>attention &mdash; Model Optimizer 0.0.1.dev1+g5e3db75e1</title>
+  <title>attention &mdash; Model Optimizer 0.0.1.dev1+g62a7b9d2c</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -33,7 +33,7 @@
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" />
-    <link rel="next" title="conv" href="modelopt.torch.kernels.quantization.conv.html" />
+    <link rel="next" title="p_qdq" href="modelopt.torch.kernels.quantization.attention.p_qdq.html" />
     <link rel="prev" title="quantization" href="modelopt.torch.kernels.quantization.html" /> 
 </head>
 
@@ -162,7 +162,21 @@
              
   <section id="attention">
 <h1>attention<a class="headerlink" href="#attention" title="Link to this heading"></a></h1>
-<p id="module-modelopt.torch.kernels.quantization.attention">Quantization-specific attention kernel pieces (placeholder for combined sparse+quant path).</p>
+<p class="rubric">Modules</p>
+<table class="autosummary longtable docutils align-default">
+<tbody>
+<tr class="row-odd"><td><p><a class="reference internal" href="modelopt.torch.kernels.quantization.attention.p_qdq.html#module-modelopt.torch.kernels.quantization.attention.p_qdq" title="modelopt.torch.kernels.quantization.attention.p_qdq"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modelopt.torch.kernels.quantization.attention.p_qdq</span></code></a></p></td>
+<td><p>Softmax-P quant-dequant helpers for the unified flash attention kernel.</p></td>
+</tr>
+</tbody>
+</table>
+<p id="module-modelopt.torch.kernels.quantization.attention">Quantization-specific attention kernel pieces.</p>
+<p><code class="docutils literal notranslate"><span class="pre">p_qdq.py</span></code> holds the softmax-P (<code class="docutils literal notranslate"><span class="pre">p_bmm_quantizer</span></code>) quant-dequant
+<code class="docutils literal notranslate"><span class="pre">&#64;triton.jit</span></code> helpers invoked by the unified flash-attention kernel in
+<code class="docutils literal notranslate"><span class="pre">common/attention/triton_fa.py</span></code> under its <code class="docutils literal notranslate"><span class="pre">P_QDQ</span></code> constexpr guard.
+Only NVFP4 needs a P-specific helper (tiling and block-amax policy on top of
+<code class="docutils literal notranslate"><span class="pre">quantization/common/nvfp4_quant.py</span></code>); the FP8 mode uses
+<code class="docutils literal notranslate"><span class="pre">quantization/common/fp8_quant.fp8_scalar_qdq</span></code> directly.</p>
 </section>
 
 
@@ -170,7 +184,7 @@
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="modelopt.torch.kernels.quantization.html" class="btn btn-neutral float-left" title="quantization" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-        <a href="modelopt.torch.kernels.quantization.conv.html" class="btn btn-neutral float-right" title="conv" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="modelopt.torch.kernels.quantization.attention.p_qdq.html" class="btn btn-neutral float-right" title="p_qdq" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

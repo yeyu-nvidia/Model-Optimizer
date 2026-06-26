@@ -61,6 +61,7 @@ quant\_utils
       preprocess_linear_fusion
       process_layer_quant_config
       resmooth_and_get_scale
+      sync_tied_input_amax
       to_quantized_weight
    
    

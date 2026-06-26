@@ -5,7 +5,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Index &mdash; Model Optimizer 0.0.1.dev1+g5e3db75e1</title>
+  <title>Index &mdash; Model Optimizer 0.0.1.dev1+g62a7b9d2c</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="_static/copybutton.css?v=76b2166b" />
@@ -1162,6 +1162,8 @@
 </li>
       <li><a href="reference/generated/modelopt.onnx.utils.html#modelopt.onnx.utils.clear_stale_value_info">clear_stale_value_info() (in module modelopt.onnx.utils)</a>
 </li>
+      <li><a href="reference/generated/modelopt.onnx.autocast.utils.html#modelopt.onnx.autocast.utils.clear_types_and_shapes_recursive">clear_types_and_shapes_recursive() (in module modelopt.onnx.autocast.utils)</a>
+</li>
       <li><a href="reference/generated/modelopt.torch.export.model_config.html#modelopt.torch.export.model_config.AttentionConfig.clip_qkv">clip_qkv (AttentionConfig attribute)</a>
 
       <ul>
@@ -1768,17 +1770,21 @@
 </li>
       <li><a href="reference/generated/modelopt.torch.utils.memory_monitor.html#modelopt.torch.utils.memory_monitor.GPUMemoryMonitor.device_count">device_count (GPUMemoryMonitor attribute)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/modelopt.torch.speculative.config.html#modelopt.torch.speculative.config.DFlashConfig.dflash_architecture_config">dflash_architecture_config (DFlashConfig attribute)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/modelopt.torch.speculative.config.html#modelopt.torch.speculative.config.DFlashConfig.dflash_block_size">dflash_block_size (DFlashConfig attribute)</a>
+</li>
+      <li><a href="reference/generated/modelopt.torch.speculative.config.html#modelopt.torch.speculative.config.DFlashConfig.dflash_dpace_alpha">dflash_dpace_alpha (DFlashConfig attribute)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.speculative.config.html#modelopt.torch.speculative.config.DFlashConfig.dflash_export_rope_scaling">dflash_export_rope_scaling (DFlashConfig attribute)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.speculative.config.html#modelopt.torch.speculative.config.DFlashConfig.dflash_freeze_base_model">dflash_freeze_base_model (DFlashConfig attribute)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.speculative.config.html#modelopt.torch.speculative.config.DFlashConfig.dflash_loss_decay_factor">dflash_loss_decay_factor (DFlashConfig attribute)</a>
+</li>
+      <li><a href="reference/generated/modelopt.torch.speculative.config.html#modelopt.torch.speculative.config.DFlashConfig.dflash_loss_objective">dflash_loss_objective (DFlashConfig attribute)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.speculative.config.html#modelopt.torch.speculative.config.DFlashConfig.dflash_mask_token_id">dflash_mask_token_id (DFlashConfig attribute)</a>
 </li>
@@ -3434,10 +3440,10 @@
 </li>
       <li><a href="reference/generated/modelopt.onnx.op_types.html#modelopt.onnx.op_types.is_conversion_op">is_conversion_op() (in module modelopt.onnx.op_types)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/modelopt.torch.opt.conversion.html#modelopt.torch.opt.conversion.ModeloptStateManager.is_converted">is_converted() (ModeloptStateManager class method)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="reference/generated/modelopt.onnx.op_types.html#modelopt.onnx.op_types.is_copy_op">is_copy_op() (in module modelopt.onnx.op_types)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.trace.symbols.html#modelopt.torch.trace.symbols.Symbol.is_cross_layer">is_cross_layer (Symbol property)</a>
@@ -3494,6 +3500,8 @@
         <li><a href="reference/generated/modelopt.torch.trace.tracer.html#modelopt.torch.trace.tracer.RobustTracer.is_failed">(RobustTracer method)</a>
 </li>
       </ul></li>
+      <li><a href="reference/generated/modelopt.torch.quantization.nn.modules.tensor_quantizer.html#modelopt.torch.quantization.nn.modules.tensor_quantizer.TensorQuantizer.is_fp8">is_fp8 (TensorQuantizer property)</a>
+</li>
       <li><a href="reference/generated/modelopt.torch.trace.symbols.html#modelopt.torch.trace.symbols.Symbol.is_free">is_free (Symbol property)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.puzzletron.pruning.expert_removal_pruning_mixin.html#modelopt.torch.puzzletron.pruning.expert_removal_pruning_mixin.ExpertRemovalLayerDescriptor.is_fused_experts">is_fused_experts (ExpertRemovalLayerDescriptor attribute)</a>
@@ -3561,6 +3569,8 @@
       <li><a href="reference/generated/modelopt.onnx.op_types.html#modelopt.onnx.op_types.is_non_reshape_copy_op">is_non_reshape_copy_op() (in module modelopt.onnx.op_types)</a>
 </li>
       <li><a href="reference/generated/modelopt.onnx.op_types.html#modelopt.onnx.op_types.is_normalization_op">is_normalization_op() (in module modelopt.onnx.op_types)</a>
+</li>
+      <li><a href="reference/generated/modelopt.torch.quantization.nn.modules.tensor_quantizer.html#modelopt.torch.quantization.nn.modules.tensor_quantizer.TensorQuantizer.is_nvfp4_dynamic">is_nvfp4_dynamic (TensorQuantizer property)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.quantization.nn.modules.tensor_quantizer.html#modelopt.torch.quantization.nn.modules.tensor_quantizer.TensorQuantizer.is_nvfp4_static">is_nvfp4_static (TensorQuantizer property)</a>
 </li>
@@ -4913,6 +4923,34 @@
 </li>
       </ul></li>
       <li>
+    modelopt.torch.kernels.quantization.attention.p_qdq
+
+      <ul>
+        <li><a href="reference/generated/modelopt.torch.kernels.quantization.attention.p_qdq.html#module-modelopt.torch.kernels.quantization.attention.p_qdq">module</a>
+</li>
+      </ul></li>
+      <li>
+    modelopt.torch.kernels.quantization.common
+
+      <ul>
+        <li><a href="reference/generated/modelopt.torch.kernels.quantization.common.html#module-modelopt.torch.kernels.quantization.common">module</a>
+</li>
+      </ul></li>
+      <li>
+    modelopt.torch.kernels.quantization.common.fp8_quant
+
+      <ul>
+        <li><a href="reference/generated/modelopt.torch.kernels.quantization.common.fp8_quant.html#module-modelopt.torch.kernels.quantization.common.fp8_quant">module</a>
+</li>
+      </ul></li>
+      <li>
+    modelopt.torch.kernels.quantization.common.nvfp4_quant
+
+      <ul>
+        <li><a href="reference/generated/modelopt.torch.kernels.quantization.common.nvfp4_quant.html#module-modelopt.torch.kernels.quantization.common.nvfp4_quant">module</a>
+</li>
+      </ul></li>
+      <li>
     modelopt.torch.kernels.quantization.conv
 
       <ul>
@@ -4973,13 +5011,6 @@
 
       <ul>
         <li><a href="reference/generated/modelopt.torch.kernels.quantization.gemm.nvfp4_fp8_sweep.html#module-modelopt.torch.kernels.quantization.gemm.nvfp4_fp8_sweep">module</a>
-</li>
-      </ul></li>
-      <li>
-    modelopt.torch.kernels.quantization.gemm.nvfp4_quant
-
-      <ul>
-        <li><a href="reference/generated/modelopt.torch.kernels.quantization.gemm.nvfp4_quant.html#module-modelopt.torch.kernels.quantization.gemm.nvfp4_quant">module</a>
 </li>
       </ul></li>
       <li>
@@ -7034,6 +7065,14 @@
 </li>
         <li><a href="reference/generated/modelopt.torch.kernels.quantization.attention.html#module-modelopt.torch.kernels.quantization.attention">modelopt.torch.kernels.quantization.attention</a>
 </li>
+        <li><a href="reference/generated/modelopt.torch.kernels.quantization.attention.p_qdq.html#module-modelopt.torch.kernels.quantization.attention.p_qdq">modelopt.torch.kernels.quantization.attention.p_qdq</a>
+</li>
+        <li><a href="reference/generated/modelopt.torch.kernels.quantization.common.html#module-modelopt.torch.kernels.quantization.common">modelopt.torch.kernels.quantization.common</a>
+</li>
+        <li><a href="reference/generated/modelopt.torch.kernels.quantization.common.fp8_quant.html#module-modelopt.torch.kernels.quantization.common.fp8_quant">modelopt.torch.kernels.quantization.common.fp8_quant</a>
+</li>
+        <li><a href="reference/generated/modelopt.torch.kernels.quantization.common.nvfp4_quant.html#module-modelopt.torch.kernels.quantization.common.nvfp4_quant">modelopt.torch.kernels.quantization.common.nvfp4_quant</a>
+</li>
         <li><a href="reference/generated/modelopt.torch.kernels.quantization.conv.html#module-modelopt.torch.kernels.quantization.conv">modelopt.torch.kernels.quantization.conv</a>
 </li>
         <li><a href="reference/generated/modelopt.torch.kernels.quantization.conv.bench_implicit_gemm.html#module-modelopt.torch.kernels.quantization.conv.bench_implicit_gemm">modelopt.torch.kernels.quantization.conv.bench_implicit_gemm</a>
@@ -7051,8 +7090,6 @@
         <li><a href="reference/generated/modelopt.torch.kernels.quantization.gemm.gptq_fused_kernel.html#module-modelopt.torch.kernels.quantization.gemm.gptq_fused_kernel">modelopt.torch.kernels.quantization.gemm.gptq_fused_kernel</a>
 </li>
         <li><a href="reference/generated/modelopt.torch.kernels.quantization.gemm.nvfp4_fp8_sweep.html#module-modelopt.torch.kernels.quantization.gemm.nvfp4_fp8_sweep">modelopt.torch.kernels.quantization.gemm.nvfp4_fp8_sweep</a>
-</li>
-        <li><a href="reference/generated/modelopt.torch.kernels.quantization.gemm.nvfp4_quant.html#module-modelopt.torch.kernels.quantization.gemm.nvfp4_quant">modelopt.torch.kernels.quantization.gemm.nvfp4_quant</a>
 </li>
         <li><a href="reference/generated/modelopt.torch.kernels.sparsity.html#module-modelopt.torch.kernels.sparsity">modelopt.torch.kernels.sparsity</a>
 </li>
@@ -9602,6 +9639,8 @@
       <li><a href="reference/generated/modelopt.torch.quantization.config.html#modelopt.torch.quantization.config.MaxCalibConfig.sync_expert_weight_amax">sync_expert_weight_amax (MaxCalibConfig attribute)</a>
 </li>
       <li><a href="reference/generated/modelopt.torch.export.layer_utils.html#modelopt.torch.export.layer_utils.sync_moe_gate_up_amax">sync_moe_gate_up_amax() (in module modelopt.torch.export.layer_utils)</a>
+</li>
+      <li><a href="reference/generated/modelopt.torch.export.quant_utils.html#modelopt.torch.export.quant_utils.sync_tied_input_amax">sync_tied_input_amax() (in module modelopt.torch.export.quant_utils)</a>
 </li>
   </ul></td>
 </tr></table>

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>fp4_kernel &mdash; Model Optimizer 0.0.1.dev1+g5e3db75e1</title>
+  <title>fp4_kernel &mdash; Model Optimizer 0.0.1.dev1+g62a7b9d2c</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -182,7 +182,7 @@ operations using Triton kernels.</p>
 </table>
 <dl class="py function">
 <dt class="sig sig-object py" id="modelopt.torch.kernels.quantization.gemm.fp4_kernel.compute_fp4_scales">
-<span class="sig-name descname"><span class="pre">compute_fp4_scales</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_amax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantize_block_scales</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.kernels.quantization.gemm.fp4_kernel.compute_fp4_scales" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">compute_fp4_scales</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">amax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_amax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantize_block_scales</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fp8_max_for_normalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">448.0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.kernels.quantization.gemm.fp4_kernel.compute_fp4_scales" title="Link to this definition"></a></dt>
 <dd><p>Compute per-block FP4 scales from amax values.</p>
 <p><code class="docutils literal notranslate"><span class="pre">scale</span> <span class="pre">=</span> <span class="pre">amax</span> <span class="pre">/</span> <span class="pre">6.0</span></code>, optionally quantized to FP8 E4M3.</p>
 <dl class="field-list simple">
@@ -191,6 +191,8 @@ operations using Triton kernels.</p>
 <li><p><strong>amax</strong> (<em>Tensor</em>) – Per-block amax values (any shape).</p></li>
 <li><p><strong>global_amax</strong> (<em>Tensor</em><em> | </em><em>None</em>) – Global amax for FP8 two-level scaling. Computed from <em>amax</em> if None.</p></li>
 <li><p><strong>quantize_block_scales</strong> (<em>bool</em>) – If True, quantize scales to FP8 E4M3.</p></li>
+<li><p><strong>fp8_max_for_normalization</strong> (<em>float</em>) – FP8 max value used to normalize per-block scales
+before FP8 quantization (default 448.0; use 256.0 for NVFP4 4/6 mode).</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns<span class="colon">:</span></dt>
@@ -228,7 +230,7 @@ operations using Triton kernels.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="modelopt.torch.kernels.quantization.gemm.fp4_kernel.static_blockwise_fp4_fake_quant">
-<span class="sig-name descname"><span class="pre">static_blockwise_fp4_fake_quant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_amax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantize_block_scales</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.kernels.quantization.gemm.fp4_kernel.static_blockwise_fp4_fake_quant" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">static_blockwise_fp4_fake_quant</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">amax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">global_amax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">quantize_block_scales</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fp8_max_for_normalization</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">448.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_dtype</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.kernels.quantization.gemm.fp4_kernel.static_blockwise_fp4_fake_quant" title="Link to this definition"></a></dt>
 <dd><p>Static blockwise FP4 fake quantization using Triton kernel.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>
@@ -243,6 +245,8 @@ linear weights <code class="docutils literal notranslate"><span class="pre">(N,<
 consumes it as a flat 1-D buffer of length <code class="docutils literal notranslate"><span class="pre">NUM_FP4_BLOCKS</span></code>.</p></li>
 <li><p><strong>global_amax</strong> (<em>Tensor</em><em> | </em><em>None</em>) – FP32 scalar global amax. If provided, used to compute scale_fp8_quant_amax.</p></li>
 <li><p><strong>quantize_block_scales</strong> (<em>bool</em>) – If True, quantize block scales to FP8.</p></li>
+<li><p><strong>fp8_max_for_normalization</strong> (<em>float</em>) – FP8 max value used to normalize per-block scales
+before FP8 quantization (default 448.0; use 256.0 for NVFP4 4/6 mode).</p></li>
 <li><p><strong>out_dtype</strong> (<em>dtype</em><em> | </em><em>None</em>) – Output dtype. Defaults to x.dtype if None.</p></li>
 </ul>
 </dd>

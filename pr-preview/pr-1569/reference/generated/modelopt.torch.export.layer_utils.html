@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>layer_utils &mdash; Model Optimizer 0.0.1.dev1+g5e3db75e1</title>
+  <title>layer_utils &mdash; Model Optimizer 0.0.1.dev1+g62a7b9d2c</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -802,7 +802,8 @@ If None, defaults to [“input_quantizer”] for backward compatibility.</p></li
 <span class="sig-name descname"><span class="pre">sync_moe_gate_up_amax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.export.layer_utils.sync_moe_gate_up_amax" title="Link to this definition"></a></dt>
 <dd><p>Take element-wise max of gate and up weight quantizer amaxes per expert.</p>
 <p>Serving engines fuse gate_proj and up_proj into a single gate_up_proj and
-require a single weight_scale_2. Since weight_scale_2 = amax / (6 * 448),
+require a single weight_scale_2. Since weight_scale_2 = amax / (6 * m_fp8)
+(m_fp8=448 normally, 256 for NVFP4 4/6 mode),
 syncing amaxes before quantization ensures the per-block weight_scale values
 are computed against a consistent global scale.</p>
 <p>Only affects standard MoE models with separate gate/up linear layers

@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>utils &mdash; Model Optimizer 0.0.1.dev1+g5e3db75e1</title>
+  <title>utils &mdash; Model Optimizer 0.0.1.dev1+g62a7b9d2c</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -759,7 +759,7 @@ typically <code class="docutils literal notranslate"><span class="pre">some_kv_c
 <li><p>custom per-weight quantizer (e.g. <code class="docutils literal notranslate"><span class="pre">Llama4TextExperts</span></code> with <code class="docutils literal notranslate"><span class="pre">gate_up_proj</span></code> +
 <code class="docutils literal notranslate"><span class="pre">gate_up_proj_weight_quantizer</span></code>).</p></li>
 <li><p>fused-experts <code class="docutils literal notranslate"><span class="pre">nn.ModuleList</span></code> quantizers (<code class="docutils literal notranslate"><span class="pre">_QuantFusedExperts</span></code> with
-<code class="docutils literal notranslate"><span class="pre">gate_up_proj</span></code> + <code class="docutils literal notranslate"><span class="pre">gate_up_proj_weight_quantizers</span></code> plural list).</p></li>
+<code class="docutils literal notranslate"><span class="pre">&lt;first_proj&gt;</span></code> + <code class="docutils literal notranslate"><span class="pre">&lt;first_proj&gt;_weight_quantizers</span></code> plural list).</p></li>
 </ul>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters<span class="colon">:</span></dt>

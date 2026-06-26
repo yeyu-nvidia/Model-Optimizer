@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>quant_utils &mdash; Model Optimizer 0.0.1.dev1+g5e3db75e1</title>
+  <title>quant_utils &mdash; Model Optimizer 0.0.1.dev1+g62a7b9d2c</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -253,7 +253,10 @@
 <tr class="row-even"><td><p><a class="reference internal" href="#modelopt.torch.export.quant_utils.resmooth_and_get_scale" title="modelopt.torch.export.quant_utils.resmooth_and_get_scale"><code class="xref py py-obj docutils literal notranslate"><span class="pre">resmooth_and_get_scale</span></code></a></p></td>
 <td><p>Resmooths weights from a single or multiple ranks and get scaling factors and amax.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="#modelopt.torch.export.quant_utils.to_quantized_weight" title="modelopt.torch.export.quant_utils.to_quantized_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_quantized_weight</span></code></a></p></td>
+<tr class="row-odd"><td><p><a class="reference internal" href="#modelopt.torch.export.quant_utils.sync_tied_input_amax" title="modelopt.torch.export.quant_utils.sync_tied_input_amax"><code class="xref py py-obj docutils literal notranslate"><span class="pre">sync_tied_input_amax</span></code></a></p></td>
+<td><p>Max-merge input_quantizer amaxes across modules sharing a weight <code class="docutils literal notranslate"><span class="pre">data_ptr</span></code>.</p></td>
+</tr>
+<tr class="row-even"><td><p><a class="reference internal" href="#modelopt.torch.export.quant_utils.to_quantized_weight" title="modelopt.torch.export.quant_utils.to_quantized_weight"><code class="xref py py-obj docutils literal notranslate"><span class="pre">to_quantized_weight</span></code></a></p></td>
 <td><p>Converts the weight to the quantized (packed) format.</p></td>
 </tr>
 </tbody>
@@ -634,6 +637,32 @@ avg_pre_quant_scale: Calculated average of the quantization scale.</p>
 </dd>
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p>weights</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="modelopt.torch.export.quant_utils.sync_tied_input_amax">
+<span class="sig-name descname"><span class="pre">sync_tied_input_amax</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#modelopt.torch.export.quant_utils.sync_tied_input_amax" title="Link to this definition"></a></dt>
+<dd><p>Max-merge input_quantizer amaxes across modules sharing a weight <code class="docutils literal notranslate"><span class="pre">data_ptr</span></code>.</p>
+<p>Mutates <code class="docutils literal notranslate"><span class="pre">model</span></code> in place: overwrites the <code class="docutils literal notranslate"><span class="pre">.amax</span></code> buffer on every
+affected <code class="docutils literal notranslate"><span class="pre">input_quantizer</span></code> with the per-group maximum. Intended to
+run as part of an export pipeline that already replaces weights with
+packed bytes downstream — i.e. the model is not expected to be reused
+after this helper runs.</p>
+<p>Closes the loop on <code class="docutils literal notranslate"><span class="pre">input_scale</span></code> for HF-tied modules whose forward
+paths see different activation distributions (encoder vs decoder in
+YOCO-style models). Must run BEFORE per-module export so the merged
+amax flows into <code class="docutils literal notranslate"><span class="pre">input_scale</span></code> derivation. Handles both dense
+Linears (keyed by <code class="docutils literal notranslate"><span class="pre">weight.data_ptr()</span></code>) and fused MoE (keyed by
+<code class="docutils literal notranslate"><span class="pre">(&lt;first_proj&gt;,</span> <span class="pre">down_proj)</span></code> data_ptr tuple). Returns the number of
+tied groups merged.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>model</strong> (<em>Module</em>)</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p><em>int</em></p>
 </dd>
 </dl>
 </dd></dl>

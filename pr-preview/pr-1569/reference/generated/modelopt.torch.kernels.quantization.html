@@ -6,7 +6,7 @@
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>quantization &mdash; Model Optimizer 0.0.1.dev1+g5e3db75e1</title>
+  <title>quantization &mdash; Model Optimizer 0.0.1.dev1+g62a7b9d2c</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/copybutton.css?v=76b2166b" />
@@ -165,12 +165,15 @@
 <table class="autosummary longtable docutils align-default">
 <tbody>
 <tr class="row-odd"><td><p><a class="reference internal" href="modelopt.torch.kernels.quantization.attention.html#module-modelopt.torch.kernels.quantization.attention" title="modelopt.torch.kernels.quantization.attention"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modelopt.torch.kernels.quantization.attention</span></code></a></p></td>
-<td><p>Quantization-specific attention kernel pieces (placeholder for combined sparse+quant path).</p></td>
+<td><p>Quantization-specific attention kernel pieces.</p></td>
 </tr>
-<tr class="row-even"><td><p><a class="reference internal" href="modelopt.torch.kernels.quantization.conv.html#module-modelopt.torch.kernels.quantization.conv" title="modelopt.torch.kernels.quantization.conv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modelopt.torch.kernels.quantization.conv</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modelopt.torch.kernels.quantization.common.html#module-modelopt.torch.kernels.quantization.common" title="modelopt.torch.kernels.quantization.common"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modelopt.torch.kernels.quantization.common</span></code></a></p></td>
+<td><p>Shared composable Triton JIT fake-quantization functions.</p></td>
+</tr>
+<tr class="row-odd"><td><p><a class="reference internal" href="modelopt.torch.kernels.quantization.conv.html#module-modelopt.torch.kernels.quantization.conv" title="modelopt.torch.kernels.quantization.conv"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modelopt.torch.kernels.quantization.conv</span></code></a></p></td>
 <td><p>Implicit-GEMM CUDA kernel for quantized 3D convolution.</p></td>
 </tr>
-<tr class="row-odd"><td><p><a class="reference internal" href="modelopt.torch.kernels.quantization.gemm.html#module-modelopt.torch.kernels.quantization.gemm" title="modelopt.torch.kernels.quantization.gemm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modelopt.torch.kernels.quantization.gemm</span></code></a></p></td>
+<tr class="row-even"><td><p><a class="reference internal" href="modelopt.torch.kernels.quantization.gemm.html#module-modelopt.torch.kernels.quantization.gemm" title="modelopt.torch.kernels.quantization.gemm"><code class="xref py py-obj docutils literal notranslate"><span class="pre">modelopt.torch.kernels.quantization.gemm</span></code></a></p></td>
 <td><p>Triton quantization kernels.</p></td>
 </tr>
 </tbody>

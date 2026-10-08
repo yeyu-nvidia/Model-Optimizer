@@ -17,7 +17,12 @@
 
 import base64
 import importlib.util
+import json
+import subprocess
+import sys
+from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
+from threading import Thread
 
 import pytest
 
@@ -130,3 +135,129 @@ def test_openai_media_value_prefers_remote_urls_over_inlining(tmp_path):
     assert (
         server_generate_vlm_sglang._as_openai_media_value(remote, None, None, None, True) == remote
     )
+
+
+@pytest.fixture
+def openai_http_server(monkeypatch):
+    """Receive actual CLI requests without running an inference engine."""
+    received = []
+    reply = {"status": 200, "body": {"choices": [{"message": {"content": "Fixture answer."}}]}}
+
+    class Handler(BaseHTTPRequestHandler):
+        def do_POST(self):
+            self.connection.settimeout(5)
+            received.append(
+                (self.path, json.loads(self.rfile.read(int(self.headers["Content-Length"]))))
+            )
+            body = json.dumps(reply["body"]).encode()
+            self.send_response(reply["status"])
+            self.send_header("Content-Type", "application/json")
+            self.send_header("Content-Length", str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+
+        def log_message(self, *args):
+            pass
+
+    monkeypatch.setenv("NO_PROXY", "127.0.0.1")
+    monkeypatch.setenv("no_proxy", "127.0.0.1")
+    with ThreadingHTTPServer(("127.0.0.1", 0), Handler) as server:
+        thread = Thread(target=lambda: server.serve_forever(poll_interval=0.05), daemon=True)
+        thread.start()
+        try:
+            yield f"http://127.0.0.1:{server.server_port}/v1", received, reply
+        finally:
+            server.shutdown()
+            thread.join(timeout=5)
+            assert not thread.is_alive()
+
+
+def _run_openai_cli(tmp_path, url, media_kind, *extra_args):
+    media = tmp_path / ("frame.png" if media_kind == "image" else "clip.mp4")
+    media.write_bytes(b"fixture media bytes")
+    sample = {
+        "id": "fixture",
+        "messages": [{"role": "user", "content": "Describe this media."}],
+        f"{media_kind}_path": media.name,
+    }
+    data = tmp_path / "prompts.jsonl"
+    data.write_text(json.dumps(sample) + "\n")
+    output = tmp_path / "output.jsonl"
+    subprocess.run(
+        [
+            sys.executable,
+            str(_SCRIPT_PATH),
+            "--api_mode",
+            "openai",
+            "--url",
+            url,
+            "--model_name",
+            "fixture-model",
+            "--data_path",
+            str(data),
+            "--output_path",
+            str(output),
+            "--media_root",
+            str(tmp_path),
+            "--media_inline",
+            "--num_threads",
+            "1",
+            "--temperature",
+            "0.25",
+            "--max_tokens",
+            "8",
+            "--request_timeout",
+            "5",
+            *extra_args,
+        ],
+        check=True,
+        capture_output=True,
+        text=True,
+        timeout=30,
+    )
+    return (
+        sample,
+        media.read_bytes(),
+        [json.loads(line) for line in output.read_text().splitlines()],
+    )
+
+
+@pytest.mark.parametrize("media_kind", ["image", "video"])
+def test_openai_cli_sends_inline_media_over_http(tmp_path, openai_http_server, media_kind):
+    """The real CLI sends inline media and writes the HTTP server's assistant response."""
+    url, received, _ = openai_http_server
+    sample, media, output = _run_openai_cli(tmp_path, url, media_kind)
+    assert len(received) == 1
+    path, payload = received[0]
+    assert path == "/v1/chat/completions"
+    assert payload["model"] == "fixture-model"
+    assert payload["temperature"] == 0.25 and payload["max_tokens"] == 8
+    (message,) = payload["messages"]
+    assert message["role"] == "user"
+    text, content = message["content"]
+    assert text == {"type": "text", "text": sample["messages"][0]["content"]}
+    kind = f"{media_kind}_url"
+    assert content["type"] == kind
+    prefix, encoded = content[kind]["url"].split(",", 1)
+    assert prefix == f"data:{'image/png' if media_kind == 'image' else 'video/mp4'};base64"
+    assert base64.b64decode(encoded, validate=True) == media
+    assert output == [
+        {
+            "conversation_id": 0,
+            "id": sample["id"],
+            "messages": sample["messages"] + [{"role": "assistant", "content": "Fixture answer."}],
+            f"{media_kind}_path": sample[f"{media_kind}_path"],
+        }
+    ]
+
+
+def test_openai_cli_records_http_failure(tmp_path, openai_http_server):
+    """An HTTP rejection is retained in output when empty conversations are requested."""
+    url, received, reply = openai_http_server
+    reply.update(status=400, body={"error": {"message": "media rejected"}})
+    _, _, output = _run_openai_cli(tmp_path, url, "image", "--log_empty_conversations")
+    assert len(received) == 1
+    assert output[0]["messages"][-1] == {"role": "assistant", "content": ""}
+    assert output[0]["generation_error"].startswith("HTTP 400:")
+    assert "media rejected" in output[0]["generation_error"]
+    assert output[1] == {"finished": True}
